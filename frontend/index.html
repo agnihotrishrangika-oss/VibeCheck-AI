@@ -1,1 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adaptive Content Risk Detection</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen flex flex-col antialiased">
 
+    <!-- Top Navigation -->
+    <header class="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 px-6 py-4 flex justify-between items-center z-30 shadow-lg">
+        <div class="flex items-center space-x-3">
+            <div class="bg-white/20 backdrop-blur-sm text-white p-2 rounded-xl border border-white/30 flex items-center justify-center">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+            </div>
+            <h1 class="text-lg font-bold tracking-tight font-heading text-white">Content Risk Detection</h1>
+        </div>
+        <div class="flex items-center space-x-5 text-sm">
+            <span class="px-3 py-1 bg-white/10 text-blue-100 rounded-full text-xs font-medium border border-white/20">GLA University</span>
+            
+            <!-- User Dropdown Trigger -->
+            <div class="relative">
+                <button id="user-menu-btn" class="w-9 h-9 bg-gradient-to-br from-amber-400 to-orange-500 text-white rounded-full flex items-center justify-center font-bold shadow-md hover:scale-105 transition-transform border-2 border-white/50">
+                    NS
+                </button>
+                
+                <!-- Dropdown Menu -->
+                <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-1 z-50 overflow-hidden">
+                    <div class="px-4 py-2 border-b border-slate-100">
+                        <p class="text-sm font-bold text-slate-800">Nandini Saraswat</p>
+                        <p class="text-xs text-slate-500">nandini.s@gla.ac.in</p>
+                    </div>
+                    <a href="#" onclick="switchTab('profile')" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center">
+                        <i data-lucide="user" class="w-4 h-4 mr-2 text-slate-400"></i> My Profile
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center">
+                        <i data-lucide="settings" class="w-4 h-4 mr-2 text-slate-400"></i> Settings
+                    </a>
+                    <div class="border-t border-slate-100 my-1"></div>
+                    <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center font-medium">
+                        <i data-lucide="log-out" class="w-4 h-4 mr-2"></i> Log Out
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="flex flex-1 overflow-hidden">
+        
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-slate-200 flex flex-col justify-between overflow-y-auto z-20 shadow-sm">
+            <nav class="p-4 space-y-2">
+                <button onclick="switchTab('new-analysis')" id="nav-new-analysis" class="nav-btn active w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                    <span>New Analysis</span>
+                </button>
+                <button onclick="switchTab('history')" id="nav-history" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200">
+                    <i data-lucide="history" class="w-5 h-5"></i>
+                    <span>Previous Activity</span>
+                </button>
+                <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                    <span>User Profile</span>
+                </button>
+            </nav>
+            
+            <!-- Sidebar Footer -->
+            <div class="p-4 border-t border-slate-100 bg-slate-50/50">
+                <div class="bg-gradient-to-br from-indigo-50 to-blue-50 p-4 rounded-xl border border-blue-100 shadow-sm">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <p class="font-bold text-xs text-indigo-900">System Online</p>
+                    </div>
+                    <p class="text-[11px] text-indigo-700/80 leading-relaxed">Research MVP<br>500 API calls remaining</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-50 relative">
+            
+            <!-- ================= VIEW: NEW ANALYSIS ================= -->
+            <div id="view-new-analysis" class="view-section space-y-6 max-w-7xl mx-auto">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-slate-900 font-heading tracking-tight">New Analysis</h2>
+                        <p class="text-sm text-slate-500 mt-1.5">Upload a video or paste text to detect hate speech and temporal localization.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Left Column: Input Section -->
+                    <div class="space-y-6">
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 flex flex-col h-[500px] overflow-hidden">
+                            <!-- Input Tabs -->
+                            <div class="flex p-2 bg-slate-100 border-b border-slate-200">
+                                <button onclick="switchInputType('video')" id="tab-video" class="input-tab active flex-1 py-2.5 text-sm font-semibold text-center rounded-lg transition-all duration-200 flex items-center justify-center">
+                                    <i data-lucide="video" class="w-4 h-4 mr-2"></i> Video Input
+                                </button>
+                                <button onclick="switchInputType('text')" id="tab-text" class="input-tab flex-1 py-2.5 text-sm font-semibold text-center rounded-lg transition-all duration-200 flex items-center justify-center text-slate-500 hover:text-slate-700">
+                                    <i data-lucide="file-text" class="w-4 h-4 mr-2"></i> Text Input
+                                </button>
+                            </div>
+
+                            <!-- Video Input Area -->
+                            <div id="input-video" class="p-6 flex-1 flex flex-col">
+                                <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 hover:border-indigo-500 hover:bg-indigo-50/30 transition-all duration-300 cursor-pointer bg-slate-50 flex-1 flex flex-col items-center justify-center text-center group relative overflow-hidden" id="drop-zone">
+                                    <!-- Decorative background circle -->
+                                    <div class="absolute w-40 h-40 bg-indigo-100 rounded-full blur-3xl opacity-50 -top-10 -right-10"></div>
+                                    
+                                    <div class="w-20 h-20 bg-white rounded-full shadow-lg border border-slate-100 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:border-indigo-200 transition-transform duration-300 relative z-10">
+                                        <i data-lucide="upload-cloud" class="w-10 h-10 text-indigo-500"></i>
+                                    </div>
+                                    <p class="text-base font-bold text-slate-700 mb-1 relative z-10">Drag and drop your video here</p>
+                                    <p class="text-xs text-slate-400 mb-4 relative z-10">or</p>
+                                    <button class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-indigo-700 text-sm shadow-md shadow-indigo-200 transition-all relative z-10">Browse Files</button>
+                                    <input type="file" id="file-input" class="hidden" accept="video/mp4,video/quicktime,video/webm">
+                                    <p class="text-[11px] text-slate-400 mt-4 bg-slate-100 px-3 py-1 rounded-full relative z-10">Max duration: 60s (MP4, MOV, WebM)</p>
+                                </div>
+                            </div>
+
+                            <!-- Text Input Area (Hidden by default) -->
+                            <div id="input-text" class="p-6 flex-1 flex-col hidden">
+                                <textarea id="text-input" class="w-full h-full p-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none text-sm outline-none transition-all duration-200 bg-slate-50 focus:bg-white" placeholder="Paste Hinglish text here... e.g., 'Yeh log kya kar rahe hain, totally useless. Stop talking nonsense.'"></textarea>
+                                <div class="flex justify-between items-center mt-3 text-xs text-slate-500">
+                                    <span class="flex items-center"><i data-lucide="info" class="w-3.5 h-3.5 mr-1"></i> Supports Hindi-English code-mixed text.</span>
+                                    <span id="char-count" class="bg-slate-100 px-2 py-1 rounded">0 / 2000 chars</span>
+                                </div>
+                            </div>
+
+                            <!-- Action Button -->
+                            <div class="p-5 border-t border-slate-200 bg-slate-50/80">
+                                <button id="analyze-btn" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-6 py-3.5 rounded-xl font-bold hover:from-indigo-700 hover:to-blue-700 hover:shadow-lg hover:shadow-indigo-200 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none flex items-center justify-center text-base" disabled>
+                                    <i data-lucide="sparkles" class="w-5 h-5 mr-2"></i> Analyze Content
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Output Section -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 flex flex-col h-[500px] overflow-hidden relative">
+                        <div class="border-b border-slate-200 p-5 bg-white z-10 flex justify-between items-center">
+                            <h3 class="font-bold text-slate-800 font-heading flex items-center">
+                                <i data-lucide="activity" class="w-5 h-5 mr-2 text-indigo-600"></i> Analysis Output
+                            </h3>
+                            <span id="output-status" class="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">Awaiting Input</span>
+                        </div>
+                        
+                        <!-- Placeholder State -->
+                        <div id="output-placeholder" class="flex-1 flex flex-col items-center justify-center p-8 text-center relative">
+                            <div class="absolute inset-0 bg-gradient-to-br from-indigo-50/50 via-white to-blue-50/50 opacity-100 pointer-events-none"></div>
+                            
+                            <div class="w-24 h-24 bg-white rounded-3xl shadow-xl shadow-indigo-100 border border-indigo-50 flex items-center justify-center mb-6 relative z-10">
+                                <div class="absolute inset-0 bg-indigo-500 rounded-3xl blur-xl opacity-20 animate-pulse"></div>
+                                <i data-lucide="scan-search" class="w-10 h-10 text-indigo-500 relative z-10"></i>
+                            </div>
+                            <h4 class="text-lg font-bold text-slate-800 font-heading mb-2 relative z-10">Ready for Analysis</h4>
+                            <p class="text-sm text-slate-500 max-w-xs leading-relaxed relative z-10">
+                                Upload a video or enter text, then click "Analyze Content" to see the temporal localization, risk breakdown, and adaptive reference layer here.
+                            </p>
+                        </div>
+
+                        <!-- Result State (Hidden by default) -->
+                        <div id="output-result" class="hidden flex-1 flex-col overflow-y-auto p-5 space-y-5 bg-slate-50">
+                            
+                            <!-- Mock Video Player -->
+                            <div class="bg-slate-900 rounded-xl aspect-video flex items-center justify-center relative overflow-hidden shadow-inner">
+                                <span class="text-slate-500 text-xs font-mono">Video Player (60s)</span>
+                                <div class="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-colors cursor-pointer">
+                                    <div class="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                                        <i data-lucide="play" class="w-6 h-6 text-indigo-600 ml-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Timeline Visualization -->
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="text-sm font-bold text-slate-700">Temporal Localization</h4>
+                                    <div class="flex space-x-3 text-[10px] font-medium">
+                                        <span class="flex items-center"><span class="w-2.5 h-2.5 bg-rose-500 rounded-sm mr-1"></span> Harmful</span>
+                                        <span class="flex items-center"><span class="w-2.5 h-2.5 bg-amber-500 rounded-sm mr-1"></span> Offensive</span>
+                                        <span class="flex items-center"><span class="w-2.5 h-2.5 bg-emerald-500 rounded-sm mr-1"></span> Safe</span>
+                                    </div>
+                                </div>
+                                <div class="timeline-container" id="timeline">
+                                    <!-- Segments injected via JS -->
+                                    <div class="timeline-segment safe" style="left: 0%; width: 23%;" title="00:00 - 00:14 (Safe)"></div>
+                                    <div class="timeline-segment harmful" style="left: 23%; width: 8%;" title="00:14 - 00:18 (Harmful)"></div>
+                                    <div class="timeline-segment offensive" style="left: 31%; width: 10%;" title="00:18 - 00:24 (Offensive)"></div>
+                                    <div class="timeline-segment safe" style="left: 41%; width: 59%;" title="00:24 - 01:00 (Safe)"></div>
+                                </div>
+                                <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-mono">
+                                    <span>00:00</span>
+                                    <span>00:15</span>
+                                    <span>00:30</span>
+                                    <span>00:45</span>
+                                    <span>01:00</span>
+                                </div>
+                            </div>
+
+                            <!-- Flagged Segments List (Specific Format Requested) -->
+                            <div class="space-y-3">
+                                <h4 class="text-sm font-bold text-slate-700 border-b border-slate-200 pb-2">Flagged Segments</h4>
+                                
+                                <!-- Segment 1: Harmful -->
+                                <div class="bg-white p-3.5 rounded-xl border border-rose-100 shadow-sm border-l-4 border-l-rose-500">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-xs font-bold font-mono text-slate-800">0:14 - 0:18</span>
+                                        <span class="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">HARMFUL</span>
+                                    </div>
+                                    <p class="text-xs font-medium text-slate-800 mb-1">"Stop talking nonsense, you idiot."</p>
+                                    <div class="text-[11px] text-slate-500 leading-relaxed bg-slate-50 p-2 rounded">
+                                        <span class="font-semibold text-slate-600">Explanation:</span> Contains targeted harassment and direct insult (Offensive targeted individual).
+                                    </div>
+                                </div>
+
+                                <!-- Segment 2: Offensive -->
+                                <div class="bg-white p-3.5 rounded-xl border border-amber-100 shadow-sm border-l-4 border-l-amber-500">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-xs font-bold font-mono text-slate-800">0:18 - 0:24</span>
+                                        <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-100">OFFENSIVE</span>
+                                    </div>
+                                    <p class="text-xs font-medium text-slate-800 mb-1">"Tumhara dimaag kharab hai kya? Get out of here."</p>
+                                    <div class="text-[11px] text-slate-500 leading-relaxed bg-slate-50 p-2 rounded">
+                                        <span class="font-semibold text-slate-600">Explanation:</span> Usage of derogatory language in a code-mixed format (Offensive untargeted).
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Adaptive Reference Layer -->
+                            <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                                <h4 class="text-xs font-bold text-indigo-900 mb-1 flex items-center">
+                                    <i data-lucide="shield" class="w-3.5 h-3.5 mr-1"></i> Adaptive Reference Layer
+                                </h4>
+                                <p class="text-[11px] text-indigo-800 leading-relaxed">
+                                    <span class="font-semibold">Triggered Policy:</span> Section 4.2: Targeted Harassment. "No bullying or targeted harassment, including humiliating or repeatedly attacking someone."
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= VIEW: HISTORY ================= -->
+            <div id="view-history" class="view-section hidden space-y-6 max-w-7xl mx-auto">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-extrabold text-slate-900 font-heading tracking-tight">Previous Activity</h2>
+                    <p class="text-sm text-slate-500 mt-1.5">Review your past moderation tasks and results.</p>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                            <tr>
+                                <th class="px-6 py-4">Date</th>
+                                <th class="px-6 py-4">Input Type</th>
+                                <th class="px-6 py-4">Risk Level</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="hover:bg-slate-50/80 transition-colors group">
+                                <td class="px-6 py-4 text-slate-500 font-medium">Oct 24, 2026</td>
+                                <td class="px-6 py-4 flex items-center space-x-3">
+                                    <div class="p-2 bg-blue-50 text-blue-600 rounded-lg border border-blue-100"><i data-lucide="video" class="w-4 h-4"></i></div>
+                                    <span class="font-medium text-slate-700">reel_01.mp4</span>
+                                </td>
+                                <td class="px-6 py-4"><span class="px-2.5 py-1 bg-rose-50 text-rose-700 rounded-md text-xs font-bold border border-rose-100">Harmful</span></td>
+                                <td class="px-6 py-4 text-emerald-600 font-medium flex items-center"><i data-lucide="check-circle" class="w-4 h-4 mr-1.5"></i> Completed</td>
+                                <td class="px-6 py-4"><button class="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors group-hover:underline">View Report</button></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/80 transition-colors group">
+                                <td class="px-6 py-4 text-slate-500 font-medium">Oct 23, 2026</td>
+                                <td class="px-6 py-4 flex items-center space-x-3">
+                                    <div class="p-2 bg-amber-50 text-amber-600 rounded-lg border border-amber-100"><i data-lucide="file-text" class="w-4 h-4"></i></div>
+                                    <span class="font-medium text-slate-700">Text Snippet</span>
+                                </td>
+                                <td class="px-6 py-4"><span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-md text-xs font-bold border border-amber-100">Offensive</span></td>
+                                <td class="px-6 py-4 text-emerald-600 font-medium flex items-center"><i data-lucide="check-circle" class="w-4 h-4 mr-1.5"></i> Completed</td>
+                                <td class="px-6 py-4"><button class="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors group-hover:underline">View Report</button></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/80 transition-colors group">
+                                <td class="px-6 py-4 text-slate-500 font-medium">Oct 22, 2026</td>
+                                <td class="px-6 py-4 flex items-center space-x-3">
+                                    <div class="p-2 bg-blue-50 text-blue-600 rounded-lg border border-blue-100"><i data-lucide="video" class="w-4 h-4"></i></div>
+                                    <span class="font-medium text-slate-700">vlog_final.mov</span>
+                                </td>
+                                <td class="px-6 py-4"><span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-md text-xs font-bold border border-emerald-100">Safe</span></td>
+                                <td class="px-6 py-4 text-emerald-600 font-medium flex items-center"><i data-lucide="check-circle" class="w-4 h-4 mr-1.5"></i> Completed</td>
+                                <td class="px-6 py-4"><button class="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors group-hover:underline">View Report</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================= VIEW: PROFILE ================= -->
+            <div id="view-profile" class="view-section hidden space-y-6 max-w-7xl mx-auto">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-extrabold text-slate-900 font-heading tracking-tight">User Profile</h2>
+                    <p class="text-sm text-slate-500 mt-1.5">Manage your account details and preferences.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Profile Card -->
+                    <div class="md:col-span-1 bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 p-8 text-center relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-28 bg-gradient-to-r from-indigo-600 to-purple-600"></div>
+                        <div class="relative z-10 pt-8">
+                            <div class="w-28 h-28 bg-white text-indigo-600 rounded-full flex items-center justify-center font-extrabold text-4xl mx-auto mb-4 border-4 border-white shadow-xl">
+                                NS
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-800 font-heading">Nandini Saraswat</h3>
+                            <p class="text-sm text-slate-500 mb-6">nandini.s@gla.ac.in</p>
+                            <span class="inline-block px-4 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold border border-indigo-100 mb-8">Research Team Member</span>
+                            
+                            <div class="border-t border-slate-100 pt-6 text-left text-sm space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-500 font-medium">Joined</span>
+                                    <span class="font-bold text-slate-800">August 2026</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-500 font-medium">Department</span>
+                                    <span class="font-bold text-slate-800 text-right">Computer Engineering</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-500 font-medium">Role</span>
+                                    <span class="font-bold text-slate-800 text-right">Frontend Developer</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings / Details -->
+                    <div class="md:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 p-8">
+                        <h3 class="font-bold text-lg mb-6 border-b border-slate-100 pb-4 font-heading text-slate-800">Account Settings</h3>
+                        <form class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
+                                    <input type="text" value="Nandini Saraswat" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-slate-50 focus:bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+                                    <input type="email" value="nandini.s@gla.ac.in" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-slate-50 focus:bg-white">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Default Confidence Threshold</label>
+                                <select class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-slate-50 focus:bg-white appearance-none">
+                                    <option>0.75 (Recommended)</option>
+                                    <option>0.80 (Strict)</option>
+                                    <option>0.60 (Lenient)</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Notification Preferences</label>
+                                <div class="flex items-center space-x-3 mt-2">
+                                    <input type="checkbox" id="notif" checked class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                                    <label for="notif" class="text-sm text-slate-600">Email me when analysis is complete</label>
+                                </div>
+                            </div>
+
+                            <div class="pt-6 border-t border-slate-100 flex justify-end space-x-3">
+                                <button type="button" class="px-6 py-3 text-sm font-semibold text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors">Cancel</button>
+                                <button type="button" class="px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-blue-600 rounded-xl hover:from-indigo-700 hover:to-blue-700 shadow-md shadow-indigo-200 transition-all">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
