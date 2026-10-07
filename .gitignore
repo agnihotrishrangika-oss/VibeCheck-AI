@@ -1,4 +1,48 @@
+# Virtual Environment
+.venv/
 venv/
+ENV/
+env/
+
+# Bytecode & Caches
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Storage & Uploads
+backend/storage/
+storage/
+*.wav
+*.mp3
+*.mp4
+*.mov
+*.mkv
+
+# Model weights & Large Binaries
+*.joblib
+*.pt
+*.bin
+*.safetensors
+backend/app/models/saved_models/
+
+# Datasets (raw & large processed files)
+data/raw/
+data/processed/*.csv
+data/processed/*.parquet
+!data/processed/model_evaluation_metrics.json
+!data/processed/EVALUATION_REPORT.md
+
+# Test Media Fixtures (generated on demand)
+tests/test_media/
+
+# Environment & Secrets
 .env
+.env.*
+*.secret
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

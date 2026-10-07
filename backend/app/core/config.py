@@ -1,42 +1,49 @@
-
 """
 Central place for every tunable value in the pipeline.
 Nothing here should be hardcoded elsewhere in the app.
 """
 
+import os
 from pathlib import Path
 
 
 class Settings:
     # ---- CORS ----
     CORS_ORIGINS: list[str] = [
-        "http://localhost:5500",   # Live Server / plain frontend dev
+        "http://localhost:5500",
         "http://127.0.0.1:5500",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "*",  # Allow local file:// and Live Server origin during research
     ]
 
     # ---- Storage ----
     BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent  # backend/
-    UPLOAD_DIR: Path = BASE_DIR / "storage" / "uploads"
-    AUDIO_DIR: Path = BASE_DIR / "storage" / "audio"
+    STORAGE_DIR: Path = BASE_DIR / "storage"
+    UPLOAD_DIR: Path = STORAGE_DIR / "uploads"
+    AUDIO_DIR: Path = STORAGE_DIR / "audio"
 
     # ---- Video input validation ----
     MAX_VIDEO_DURATION_SECONDS: int = 60
     ALLOWED_VIDEO_EXTENSIONS: set[str] = {".mp4", ".mov", ".mkv", ".webm", ".avi"}
 
     # ---- Whisper ASR ----
-    # "small" or "medium" — medium is more accurate on Hinglish/accented
-    # speech but slower. Keep configurable, tune once you see real data.
-    WHISPER_MODEL_SIZE: str = "small"
-    WHISPER_DEVICE: str = "cpu"          # "cuda" if you have a GPU
-    WHISPER_COMPUTE_TYPE: str = "int8"   # "float16" if WHISPER_DEVICE == "cuda"
-    # Force transcription in the spoken language rather than auto-translating
-    # to English — the hate-speech classifier expects original Hinglish text.
+    # "tiny", "base", "small" - keep configurable via env var
+    WHISPER_MODEL_SIZE: str = os.getenv("WHISPER_MODEL_SIZE", "small")
+    WHISPER_DEVICE: str = os.getenv("WHISPER_DEVICE", "cpu")
+    WHISPER_COMPUTE_TYPE: str = os.getenv("WHISPER_COMPUTE_TYPE", "int8")
     WHISPER_TASK: str = "transcribe"
     WHISPER_LANGUAGE: str | None = None  # None = auto-detect; set "hi" to force Hindi
 
-    # ---- Hate-speech classification (thresholds used by postprocessor.py) ----
-    HATE_CONFIDENCE_THRESHOLD: float = 0.6
-    MERGE_ADJACENT_SEGMENTS_GAP_SECONDS: float = 1.0
+    # ---- Risk classification & Postprocessing thresholds ----
+    RISK_CONFIDENCE_THRESHOLD: float = float(os.getenv("RISK_CONFIDENCE_THRESHOLD", "0.50"))
+    MERGE_ADJACENT_SEGMENTS_GAP_SECONDS: float = float(os.getenv("MERGE_GAP_SECONDS", "1.0"))
+
+    # ---- Default Policy Versions ----
+    DEFAULT_YOUTUBE_POLICY_VERSION: str = "v1"
+    DEFAULT_META_POLICY_VERSION: str = "v1"
 
 
 settings = Settings()

@@ -1,0 +1,208 @@
+{
+  "tfidf_logistic_regression": {
+    "model_name": "TF-IDF (Word n-gram) + Logistic Regression",
+    "type": "N-gram Linear Baseline",
+    "train_time_sec": 5.44,
+    "macro_f1": 0.5867,
+    "weighted_f1": 0.5823,
+    "macro_precision": 0.5846,
+    "macro_recall": 0.5899,
+    "per_class": {
+      "harassment": {
+        "precision": 0.5351,
+        "recall": 0.4931,
+        "f1-score": 0.5133,
+        "support": 2551.0
+      },
+      "hate_speech": {
+        "precision": 0.5785,
+        "recall": 0.5945,
+        "f1-score": 0.5864,
+        "support": 2163.0
+      },
+      "normal": {
+        "precision": 0.6402,
+        "recall": 0.6821,
+        "f1-score": 0.6605,
+        "support": 2139.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        1258,
+        721,
+        572
+      ],
+      [
+        629,
+        1286,
+        248
+      ],
+      [
+        464,
+        216,
+        1459
+      ]
+    ],
+    "classes": [
+      "harassment",
+      "hate_speech",
+      "normal"
+    ]
+  },
+  "word_char_calibrated_svm": {
+    "model_name": "Word+Char n-gram + Calibrated Linear SVM",
+    "type": "Subword Morphological Linear Model",
+    "train_time_sec": 20.48,
+    "macro_f1": 0.6079,
+    "weighted_f1": 0.6051,
+    "macro_precision": 0.6125,
+    "macro_recall": 0.6054,
+    "per_class": {
+      "harassment": {
+        "precision": 0.5374,
+        "recall": 0.5911,
+        "f1-score": 0.563,
+        "support": 2551.0
+      },
+      "hate_speech": {
+        "precision": 0.6308,
+        "recall": 0.564,
+        "f1-score": 0.5956,
+        "support": 2163.0
+      },
+      "normal": {
+        "precision": 0.6692,
+        "recall": 0.6611,
+        "f1-score": 0.6651,
+        "support": 2139.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        1508,
+        555,
+        488
+      ],
+      [
+        732,
+        1220,
+        211
+      ],
+      [
+        566,
+        159,
+        1414
+      ]
+    ],
+    "classes": [
+      "harassment",
+      "hate_speech",
+      "normal"
+    ]
+  },
+  "hatebert_english_only": {
+    "model_name": "HateBERT (GroNLP/hateBERT)",
+    "type": "Monolingual English Hate Speech Transformer",
+    "eval_time_sec": 164.95,
+    "macro_f1": 0.4622,
+    "weighted_f1": 0.4588,
+    "macro_precision": 0.4641,
+    "macro_recall": 0.4647,
+    "per_class": {
+      "harassment": {
+        "precision": 0.4315,
+        "recall": 0.3812,
+        "f1-score": 0.4048,
+        "support": 223.0
+      },
+      "hate_speech": {
+        "precision": 0.4348,
+        "recall": 0.5263,
+        "f1-score": 0.4762,
+        "support": 190.0
+      },
+      "normal": {
+        "precision": 0.526,
+        "recall": 0.4866,
+        "f1-score": 0.5056,
+        "support": 187.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        85,
+        82,
+        56
+      ],
+      [
+        64,
+        100,
+        26
+      ],
+      [
+        48,
+        48,
+        91
+      ]
+    ],
+    "classes": [
+      "harassment",
+      "hate_speech",
+      "normal"
+    ],
+    "limitations_observed": "Severe subword token fragmentation on Romanized Hindi / Hinglish. Poor lexical alignment for Indian cultural slang and slurs."
+  },
+  "muril_multilingual": {
+    "model_name": "MuRIL (google/muril-base-cased)",
+    "type": "Multilingual Indian Language & Code-Mix Transformer",
+    "eval_time_sec": 196.33,
+    "macro_f1": 0.412,
+    "weighted_f1": 0.3994,
+    "macro_precision": 0.4678,
+    "macro_recall": 0.4689,
+    "per_class": {
+      "harassment": {
+        "precision": 0.5192,
+        "recall": 0.1211,
+        "f1-score": 0.1964,
+        "support": 223.0
+      },
+      "hate_speech": {
+        "precision": 0.4449,
+        "recall": 0.5316,
+        "f1-score": 0.4844,
+        "support": 190.0
+      },
+      "normal": {
+        "precision": 0.4393,
+        "recall": 0.754,
+        "f1-score": 0.5551,
+        "support": 187.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        27,
+        87,
+        109
+      ],
+      [
+        18,
+        101,
+        71
+      ],
+      [
+        7,
+        39,
+        141
+      ]
+    ],
+    "classes": [
+      "harassment",
+      "hate_speech",
+      "normal"
+    ],
+    "advantages_observed": "Direct support for 17 Indian languages and Romanized/Devanagari transliterated representations without subword fragmentation."
+  }
+}
