@@ -1,0 +1,18 @@
+{
+  "model": "google/muril-base-cased",
+  "training_examples": 3000,
+  "test_examples": 6725,
+  "epochs": 2,
+  "accuracy": 0.4887732342007435,
+  "macro_f1": 0.3956487326180766,
+  "label_order": [
+    "harassment",
+    "hate_speech",
+    "normal"
+  ],
+  "prediction_counts": {
+    "harassment": 4408,
+    "hate_speech": 4,
+    "normal": 2313
+  }
+}

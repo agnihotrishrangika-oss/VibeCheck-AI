@@ -9,14 +9,24 @@ Saves model bundles to backend/app/models/saved_models/
 import time
 from pathlib import Path
 import pandas as pd
-import joblib
+import joblib   
+from sklearn.model_selection import GridSearchCV, StratifiedKFold
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+    f1_score
+)
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import FeatureUnion
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
 from sklearn.calibration import CalibratedClassifierCV
-from sklearn.metrics import classification_report, f1_score
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
 
 
 def train_models():
@@ -54,30 +64,106 @@ def train_models():
         models_dir / "tfidf_logreg_baseline.joblib"
     )
 
-    # 2. Word + Char TF-IDF + Calibrated Linear SVM
-    print("\n[2/2] Training Word + Char TF-IDF + Calibrated Linear SVM...")
-    union = FeatureUnion([
-        ("word", TfidfVectorizer(ngram_range=(1, 2), analyzer="word", max_features=25000, sublinear_tf=True)),
-        ("char", TfidfVectorizer(ngram_range=(3, 5), analyzer="char_wb", max_features=35000, sublinear_tf=True)),
+    
+    # 2. Tuned Word + Character TF-IDF + Linear SVM
+    print("\n[2/2] Tuning Word + Character TF-IDF + Linear SVM...")
+
+    features = FeatureUnion([
+        ("word", TfidfVectorizer(
+            analyzer="word",
+            ngram_range=(1, 2),
+            max_features=25000,
+            min_df=2,
+            sublinear_tf=True
+        )),
+        ("char", TfidfVectorizer(
+            analyzer="char_wb",
+            ngram_range=(3, 5),
+            max_features=35000,
+            min_df=2,
+            sublinear_tf=True
+        )),
     ])
-    X_tr_wc = union.fit_transform(X_train)
-    X_te_wc = union.transform(X_test)
 
-    base_svm = LinearSVC(C=0.8, class_weight="balanced", random_state=42, max_iter=2000)
-    calibrated_svm = CalibratedClassifierCV(base_svm, cv=3)
-    calibrated_svm.fit(X_tr_wc, y_train)
-    y_pred_svm = calibrated_svm.predict(X_te_wc)
+    pipeline = Pipeline([
+        ("features", features),
+        ("classifier", LinearSVC(
+            random_state=42,
+            max_iter=5000
+        ))
+    ])
 
-    print("Calibrated SVM Macro F1:", f1_score(y_test, y_pred_svm, average="macro"))
-    print("\nClassification Report (Calibrated SVM):")
-    print(classification_report(y_test, y_pred_svm, digits=4))
+    # Every candidate is evaluated using training data only.
+    cv = StratifiedKFold(
+        n_splits=3,
+        shuffle=True,
+        random_state=42
+    )
 
+    param_grid = {
+        "classifier__C": [0.1, 0.3, 0.8, 1.0, 2.0],
+        "classifier__class_weight": [None, "balanced"],
+        "features__word__ngram_range": [(1, 1), (1, 2)],
+        "features__char__ngram_range": [(2, 5), (3, 5)],
+    }
+
+    search = GridSearchCV(
+        estimator=pipeline,
+        param_grid=param_grid,
+        scoring="f1_macro",
+        cv=cv,
+        n_jobs=-1,
+        verbose=2,
+        refit=True,
+        error_score="raise"
+    )
+
+    search.fit(X_train, y_train)
+
+    best_pipeline = search.best_estimator_
+    y_pred_svm = best_pipeline.predict(X_test)
+
+    print("\nBest CV Macro F1:", search.best_score_)
+    print("Best parameters:", search.best_params_)
+
+    print("\n--- Tuned SVM Test Evaluation ---")
+    print("Accuracy:", accuracy_score(y_test, y_pred_svm))
+    print("Macro F1:", f1_score(
+        y_test, y_pred_svm, average="macro"
+    ))
+    print("Weighted F1:", f1_score(
+        y_test, y_pred_svm, average="weighted"
+    ))
+
+    print("\nConfusion Matrix:")
+    cm = confusion_matrix(y_test, y_pred_svm, labels=classes)
+    print(cm)
+
+    disp = ConfusionMatrixDisplay(
+        confusion_matrix=cm,
+        display_labels=classes
+    )
+    disp.plot(cmap="Blues", values_format="d")
+    plt.tight_layout()
+    plt.show()
+
+    print("\nClassification Report:")
+    print(classification_report(
+        y_test,
+        y_pred_svm,
+        labels=classes,
+        digits=4,
+        zero_division=0
+    ))
+
+    # Preserve the bundle format used by the existing model loader.
     joblib.dump(
-        {"vectorizer": union, "classifier": calibrated_svm, "classes": classes},
+        {
+            "vectorizer": best_pipeline.named_steps["features"],
+            "classifier": best_pipeline.named_steps["classifier"],
+            "classes": classes,
+        },
         models_dir / "word_char_svm_calibrated.joblib"
     )
+
     print(f"\nModel bundles saved to {models_dir}")
-
-
-if __name__ == "__main__":
-    train_models()

@@ -46,3 +46,8 @@ tests/test_media/
 .idea/
 .DS_Store
 Thumbs.db
+# Virtual environments
+.venv/
+.venv-transformer/
+venv/
+
